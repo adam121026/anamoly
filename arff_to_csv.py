@@ -1,8 +1,9 @@
 import pandas as pd
 import arff
 
+path_to_arff = 'bank-full.arff'
 # Load ARFF file
-with open('/home/kalyan-neeraj/Documents/ssd/bank-additional-ful-nominal.arff') as file:
+with open(path_to_arff) as file:
     arff_data = arff.load(file)
 
 # Convert to DataFrame

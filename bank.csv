@@ -1,4 +1,4 @@
-job,marital,education,default,housing,loan,contact,month,day_of_week,poutcome,y
+job,marital,education,default,housing,loan,contact,month,day_of_week,poutcome,anamoly
 housemaid,married,basic.4y,no,no,no,telephone,may,mon,nonexistent,no
 services,married,high.school,unknown,no,no,telephone,may,mon,nonexistent,no
 services,married,high.school,no,yes,no,telephone,may,mon,nonexistent,no

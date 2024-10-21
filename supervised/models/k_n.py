@@ -1,10 +1,11 @@
+# %% Libraries
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 
-# Load your dataset
+# %% Load the data
 df = pd.read_csv("../data/bank.csv")
 
 # List of categorical columns to encode
@@ -16,7 +17,8 @@ for column in categorical_columns:
     label_encoders[column] = LabelEncoder()
     df[column] = label_encoders[column].fit_transform(df[column])
 
-# Separate the features from the target 'anamoly' column
+
+# %% Separate the features from the target 'anamoly' column
 features = df.drop(columns=['anamoly'])
 
 # Scaling the features
@@ -29,7 +31,7 @@ X_train, X_test, y_train, y_test = train_test_split(features_scaled, df['anamoly
 # Initialize KNN classifier
 knn = KNeighborsClassifier(n_neighbors=5)
 
-# Train the KNN model
+# %% Train the KNN model
 knn.fit(X_train, y_train)
 
 # Predict on the test set

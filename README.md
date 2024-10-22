@@ -22,8 +22,5 @@ deactivate
 ### Dev Dependency
 - jupyter  
 
-<<<<<<< HEAD
 ## Note that in files I have condidered myenv as my local env ##
   
-=======
->>>>>>> request

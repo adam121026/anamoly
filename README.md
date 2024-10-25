@@ -12,10 +12,15 @@
     source env/bin/activate
     ```
 - You can pip install any other missing libraries
+``` python3 -m pip install <packagename> ```
 - To deactivate the virtual env use
 ```
 deactivate
 ```
+## Current Libraries
+`pip install pandas scikit-learn numpy scipy matplotlib`
+### Dev Dependency
+- jupyter  
 
 ## Note that in files I have condidered myenv as my local env ##
   

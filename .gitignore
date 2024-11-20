@@ -1,3 +1,4 @@
 *.cfg
 .ipynb*/
 .ipynb_checkpoints/
+.venv

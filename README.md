@@ -18,7 +18,7 @@
 deactivate
 ```
 ## Current Libraries
-`pip install pandas scikit-learn numpy scipy matplotlib`
+`pip install pandas scikit-learn numpy scipy matplotlib tensorflow`
 ### Dev Dependency
 - jupyter  
 

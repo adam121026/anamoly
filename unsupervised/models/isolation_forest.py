@@ -3,7 +3,7 @@ from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 
 # Load your dataset
-df = pd.read_csv("./data/bank.csv")
+df = pd.read_csv("../data/bank.csv")
 
 # List of categorical columns to encode
 categorical_columns = ['job', 'marital', 'education', 'default', 'housing', 'loan', 'contact', 'month', 'day_of_week', 'poutcome']
@@ -36,7 +36,7 @@ summary = df[['anamoly', 'predicted_anamoly']].value_counts()
 print(summary)
 
 # Save the updated data to a new CSV with both actual and predicted anomaly columns
-df.to_csv("./data/anamoly_predictions.csv", columns=['anamoly', 'predicted_anamoly'], index=False)
+df.to_csv("../data/anamoly_predictions.csv", columns=['anamoly', 'predicted_anamoly'], index=False)
 
 # Display how 'yes' and 'no' are distributed in both original 'anamoly' and predicted 'predicted_anamoly'
 anamoly_distribution = df.groupby(['anamoly', 'predicted_anamoly']).size().reset_index(name='count')

@@ -4,6 +4,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.preprocessing import LabelEncoder, StandardScaler
+import joblib
+import os
 
 # %% Load the data
 df = pd.read_csv("../data/bank.csv")
@@ -58,3 +60,14 @@ anomaly_distribution = df.groupby(['anamoly', 'predicted_anamoly_knn']).size().r
 
 # Print the results
 print(anomaly_distribution)
+
+# %% Store knn_model
+
+model_dir = "knn-models"
+os.makedirs(model_dir, exist_ok=True)
+model_list = os.listdir(model_dir)
+
+joblib_file = f"{model_dir}/knn_model_{len(model_list)}.joblib"
+joblib.dump(knn, joblib_file)
+
+print(f"KNN model saved to {joblib_file}")

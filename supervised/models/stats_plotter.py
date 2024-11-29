@@ -1,91 +1,107 @@
+import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, classification_report
+import seaborn as sns
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import numpy as np
 
-class StatsPlotter:
-    """
-    A class to encapsulate plotting and metrics functionalities for model evaluation.
-    """
-
-    def __init__(self, X_test, y_test, y_pred):
+class EDAAnalyzer:
+    def __init__(self, df, target_column):
         """
-        Initializes the StatsPlotter with the test set and predictions.
-        
-        Parameters:
-        - X_test: pd.DataFrame or np.ndarray, test features.
-        - y_test: array-like, true labels for the test set.
-        - y_pred: array-like, predicted labels for the test set.
-        """
-        self.X_test = X_test
-        self.y_test = y_test
-        self.y_pred = y_pred
-
-    def plot_scatter(self, feature1_index, feature2_index, title="Scatter Plot of Anomalies vs Normals"):
-        """
-        Plots a scatter plot of anomalies (class 1) and normals (class 0).
+        Initialize the EDAAnalyzer with the dataset and target column.
 
         Parameters:
-        - feature1_index: int, column index or name for the x-axis feature.
-        - feature2_index: int, column index or name for the y-axis feature.
-        - title: str, title of the plot.
+        df (pd.DataFrame): The dataset.
+        target_column (str): The name of the target column.
         """
-        feature1 = self.X_test.iloc[:, feature1_index] if hasattr(self.X_test, 'iloc') else self.X_test[:, feature1_index]
-        feature2 = self.X_test.iloc[:, feature2_index] if hasattr(self.X_test, 'iloc') else self.X_test[:, feature2_index]
+        self.df = df
+        self.target_column = target_column
 
-        anomalies = self.y_pred == 1
-        normals = self.y_pred == 0
+    def combine_columns(self, category):
+        """
+        Combine one-hot encoded columns back into their original categorical column.
 
+        Parameters:
+        category (str): The prefix of the category columns to combine.
+        """
+        category_columns = [col for col in self.df.columns if col.startswith(f'{category}=')]
+        self.df[category] = self.df[category_columns].idxmax(axis=1).apply(lambda x: x.split('=')[1])
+        self.df.drop(columns=category_columns, inplace=True)
+
+    def plot_categorical_feature(self, feature):
+        """
+        Plot the count of anomaly for each value of a categorical feature.
+
+        Parameters:
+        feature (str): The name of the categorical feature to plot.
+        """
         plt.figure(figsize=(10, 6))
-        plt.scatter(feature1[normals], feature2[normals], c='blue', label='Normal', alpha=0.6)
-        plt.scatter(feature1[anomalies], feature2[anomalies], c='red', label='Anomaly', alpha=0.6)
-        plt.xlabel(f'Feature {feature1_index}')
-        plt.ylabel(f'Feature {feature2_index}')
-        plt.title(title)
+        sns.countplot(x=feature, hue=self.target_column, data=self.df)
+        plt.title(f'Count of {self.target_column} for Each {feature} Value')
+        plt.xlabel(feature)
+        plt.ylabel("Count")
+        plt.legend(title=self.target_column, loc='upper right')
+        plt.show()
+
+    def plot_all_categorical_features(self):
+        """
+        Plot the count of anomaly for all categorical features in the dataset.
+        """
+        categorical_features = self.df.select_dtypes(include=['object']).columns
+        for feature in categorical_features:
+            if feature != self.target_column:
+                self.plot_categorical_feature(feature)
+
+    def scatter_plot(self, x_feature, y_feature, labels):
+        """
+        Plot a scatter plot for two features with points colored by the target variable.
+
+        Parameters:
+        x_feature (str): The name of the feature for the x-axis.
+        y_feature (str): The name of the feature for the y-axis.
+        labels (list): Labels for the classes.
+        """
+        plt.figure(figsize=(10, 6))
+        for label in np.unique(self.df[self.target_column]):
+            subset = self.df[self.df[self.target_column] == label]
+            plt.scatter(subset[x_feature], subset[y_feature], label=labels[label], alpha=0.7)
+        plt.title(f'Scatter Plot of {x_feature} vs {y_feature}')
+        plt.xlabel(x_feature)
+        plt.ylabel(y_feature)
         plt.legend()
         plt.show()
 
-    def plot_confusion_matrix(self, labels=["Normal", "Anomaly"], title="Confusion Matrix"):
+    def plot_confusion_matrix(self, model, labels):
         """
-        Plots the confusion matrix.
+        Plot a confusion matrix for a given model.
 
         Parameters:
-        - labels: list of str, names of the classes.
-        - title: str, title of the confusion matrix plot.
+        model: The trained model to evaluate.
+        labels (list): Labels for the classes.
         """
-        conf_matrix = confusion_matrix(self.y_test, self.y_pred)
-        disp = ConfusionMatrixDisplay(confusion_matrix=conf_matrix, display_labels=labels)
+        y_pred = model.predict(self.df.drop(columns=self.target_column))
+        cm = confusion_matrix(self.df[self.target_column], y_pred)
+        disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
         disp.plot(cmap='viridis')
-        plt.title(title)
+        plt.title('Confusion Matrix')
         plt.show()
 
-    def print_classification_report(self):
+    def feature_importance(self, model):
         """
-        Prints the classification report.
+        Plot the feature importance for a tree-based model.
+
+        Parameters:
+        model: The trained tree-based model.
         """
-        report = classification_report(self.y_test, self.y_pred, target_names=["Normal", "Anomaly"])
-        print("Classification Report:\n", report)
+        if hasattr(model, 'feature_importances_'):
+            importance = model.feature_importances_
+            features = self.df.drop(columns=self.target_column).columns
+            sorted_indices = np.argsort(importance)[::-1]
 
-##usage##
-
-# from stats_plotter import StatsPlotter
-
-# # After getting predictions
-# y_pred_recall = best_model_recall.predict(X_test)
-
-# # Initialize the StatsPlotter with test data and predictions
-# plotter = StatsPlotter(X_test=X_test, y_test=y_test, y_pred=y_pred_recall)
-
-# # Generate scatter plot
-# print("\nGenerating scatter plot for anomalies vs normals...")
-# plotter.plot_scatter(
-#     feature1_index=0,  # Replace with your feature1 index or column name
-#     feature2_index=1,  # Replace with your feature2 index or column name
-#     title="Scatter Plot of Anomalies vs Normals"
-# )
-
-# # Generate confusion matrix
-# print("\nGenerating confusion matrix for the best recall model...")
-# plotter.plot_confusion_matrix(labels=['Normal', 'Anomaly'], title="Confusion Matrix")
-
-# # Print classification report
-# print("\nClassification report:")
-# plotter.print_classification_report()
+            plt.figure(figsize=(12, 8))
+            sns.barplot(x=importance[sorted_indices], y=features[sorted_indices], orient='h')
+            plt.title('Feature Importance')
+            plt.xlabel('Importance')
+            plt.ylabel('Features')
+            plt.show()
+        else:
+            print("The provided model does not have feature importances.")

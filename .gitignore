@@ -5,3 +5,8 @@
 */models/*models/
 supervised/data/census_encoded.csv
 supervised/data/census-income-full-nominal.arff
+*/*zip
+*/*arff
+census/data/census-income-full-nominal.arff
+census/data/census-income-full-nominal.zip
+census/data/census_encoded.csv

@@ -42,16 +42,5 @@ df.to_csv("../data/anamoly_predictions.csv", columns=['anamoly', 'predicted_anam
 anamoly_distribution = df.groupby(['anamoly', 'predicted_anamoly']).size().reset_index(name='count')
 print(anamoly_distribution)
 
-# %% Save the model
-import joblib
-import os
 
-model_dir = "isolation-forest-models"
-os.makedirs(model_dir, exist_ok=True)
-model_list = os.listdir(model_dir)
-
-joblib_file = f"{model_dir}/model_{len(model_list)}.joblib"
-joblib.dump(iso_forest, joblib_file)
-
-print(f"isolation-forest model saved to {joblib_file}")
 

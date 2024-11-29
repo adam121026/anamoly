@@ -23,7 +23,7 @@ scorer = make_scorer(pr_scorer, greater_is_better=True)
 # Define the parameter grid
 param_grid = {
     'n_estimators': [100, 200],
-    # 'learning_rate': [0.01, 0.1, 0.2],
+    'learning_rate': [0.01, 0.1, 0.2],
     'max_depth': [3, 4, 5]
 }
 

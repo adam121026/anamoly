@@ -34,8 +34,8 @@ logreg = LogisticRegression(max_iter=10000)
 # Define the scorer
 scorer = make_scorer(f1_score, pos_label=1)
 
-# Initialize GridSearchCV
-grid = GridSearchCV(logreg, param_grid, cv=5, scoring=scorer)
+# Initialize GridSearchCV with verbose
+grid = GridSearchCV(logreg, param_grid, cv=5, scoring=scorer, verbose=3)
 
 # Fit the model
 grid.fit(X_train, y_train)
@@ -62,7 +62,7 @@ print(classification_report(y_test, y_pred))
 
 # With class imbalance, we can use class_weight='balanced' to adjust the weights inversely proportional to class frequencies
 logreg = LogisticRegression(max_iter=10000, class_weight='balanced')
-grid = GridSearchCV(logreg, param_grid, cv=5, scoring=scorer)
+grid = GridSearchCV(logreg, param_grid, cv=5, scoring=scorer, verbose=3)
 grid.fit(X_train, y_train)
 y_pred = grid.predict(X_test)
 print("Confusion Matrix (with class imbalance):")

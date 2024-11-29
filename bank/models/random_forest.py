@@ -55,20 +55,8 @@ plt.show()
 
 
 # With class imbalance We can use class weigths to balance the classes.
-data = pd.read_csv()
-# Load the dataset
-data = pd.read_csv('../data/bank-additional-full_normalised.csv')
+X_train, y_train = smote.fit_resample(X_train, y_train)
 
-# Split the data into features and target
-X = data.iloc[:, :-1]  # all columns except the last one
-y = data.iloc[:, -1]   # the last column
-
-# Apply SMOTE to balance the classes
-smote = SMOTE(random_state=42)
-X_resampled, y_resampled = smote.fit_resample(X, y)
-
-# Split the resampled data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X_resampled, y_resampled, test_size=0.2, random_state=42)
 
 # Create a Random Forest Classifier
 clf = RandomForestClassifier(n_estimators=100, random_state=42)

@@ -5,6 +5,8 @@ from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.metrics import classification_report, make_scorer, f1_score
 from imblearn.over_sampling import SMOTE
 from sklearn.utils.class_weight import compute_sample_weight
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
 
 # Load the dataset
 data = pd.read_csv('../data/bank-additional-full_normalised.csv')
@@ -47,8 +49,21 @@ print(classification_report(y_test, y_pred))
 def run_model(X_train, y_train, X_test, y_test, sample_weight=None):
     grid_search.fit(X_train, y_train, sample_weight=sample_weight)
     best_model = grid_search.best_estimator_
+    print(grid_search.best_params_)
     y_pred = best_model.predict(X_test)
     print(classification_report(y_test, y_pred))
+    import matplotlib.pyplot as plt
+
+    # Compute confusion matrix
+    cm = confusion_matrix(y_test, y_pred)
+
+    # Plot confusion matrix
+    plt.figure(figsize=(10, 7))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues')
+    plt.xlabel('Predicted')
+    plt.ylabel('Actual')
+    plt.title('Confusion Matrix')
+    plt.show()
 
 # Run without weights
 print("Running without weights:")

@@ -2,7 +2,9 @@ import pandas as pd
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import classification_report, confusion_matrix
+from sklearn.metrics import classification_report, confusion_matrix, make_scorer, f1_score
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 # Load the dataset
 data = pd.read_csv('../data/bank-additional-full_normalised.csv')
@@ -29,8 +31,11 @@ param_grid = {
 # Initialize Logistic Regression
 logreg = LogisticRegression(max_iter=10000)
 
+# Define the scorer
+scorer = make_scorer(f1_score, pos_label=1)
+
 # Initialize GridSearchCV
-grid = GridSearchCV(logreg, param_grid, cv=5, scoring='accuracy')
+grid = GridSearchCV(logreg, param_grid, cv=5, scoring=scorer)
 
 # Fit the model
 grid.fit(X_train, y_train)
@@ -44,5 +49,30 @@ y_pred = grid.predict(X_test)
 # Evaluate the model
 print("Confusion Matrix:")
 print(confusion_matrix(y_test, y_pred))
+
+conf_matrix = confusion_matrix(y_test, y_pred)
+plt.figure(figsize=(10, 7))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.title('Confusion Matrix')
+plt.show()
 print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
+
+# With class imbalance, we can use class_weight='balanced' to adjust the weights inversely proportional to class frequencies
+logreg = LogisticRegression(max_iter=10000, class_weight='balanced')
+grid = GridSearchCV(logreg, param_grid, cv=5, scoring=scorer)
+grid.fit(X_train, y_train)
+y_pred = grid.predict(X_test)
+print("Confusion Matrix (with class imbalance):")
+
+conf_matrix = confusion_matrix(y_test, y_pred)
+plt.figure(figsize=(10, 7))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.title('Confusion Matrix (with class imbalance)')
+plt.show()
+print("\nClassification Report (with class imbalance):")
 print(classification_report(y_test, y_pred))
